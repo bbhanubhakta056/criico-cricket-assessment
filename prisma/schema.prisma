@@ -11,3 +11,90 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum PlayerRole {
+  BATSMAN
+  BOWLER
+  ALL_ROUNDER
+  WICKETKEEPER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Team {
+  id      String       @id @default(cuid())
+  name    String
+  players TeamPlayer[]
+
+  matchesAsTeamA Match[] @relation("TeamA")
+  matchesAsTeamB Match[] @relation("TeamB")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Player {
+  id        String     @id @default(cuid())
+  name      String
+  role      PlayerRole
+  basePrice Decimal    @db.Decimal(12, 2)
+
+  matchesPlayed Int @default(0)
+  totalRuns     Int @default(0)
+  totalWickets  Int @default(0)
+
+  teams        TeamPlayer[]
+  performances MatchPerformance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeamPlayer {
+  teamId   String
+  playerId String
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, playerId])
+}
+
+model Match {
+  id String @id @default(cuid())
+
+  teamAId String
+  teamBId String
+
+  teamA Team @relation("TeamA", fields: [teamAId], references: [id])
+  teamB Team @relation("TeamB", fields: [teamBId], references: [id])
+
+  playedAt DateTime @default(now())
+
+  performances MatchPerformance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MatchPerformance {
+  id String @id @default(cuid())
+
+  matchId  String
+  playerId String
+
+  runs    Int @default(0)
+  wickets Int @default(0)
+
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, playerId])
+}
