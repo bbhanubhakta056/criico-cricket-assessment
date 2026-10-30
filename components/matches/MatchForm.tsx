@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -12,12 +12,6 @@ interface MatchFormProps {
     onSuccess: () => void;
 }
 
-interface PerformanceState {
-    playerId: string;
-    runs: number;
-    wickets: number;
-}
-
 export default function MatchForm({
     teams,
     onSuccess,
@@ -25,9 +19,16 @@ export default function MatchForm({
     const [teamAId, setTeamAId] = useState("");
     const [teamBId, setTeamBId] = useState("");
     const [playedAt, setPlayedAt] = useState("");
-    const [performances, setPerformances] = useState<
-        PerformanceState[]
-    >([]);
+    const [performanceValues, setPerformanceValues] = useState<
+        Record<string, { runs: number; wickets: number }>
+    >(() => {
+        const values: Record<
+            string,
+            { runs: number; wickets: number }
+        > = {};
+
+        return values;
+    });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const teamA = useMemo(
@@ -49,53 +50,31 @@ export default function MatchForm({
         return players;
     }, [teamA, teamB]);
 
-    useEffect(() => {
-        setPerformances((current) => {
-            const existing = new Map(
-                current.map((performance) => [
-                    performance.playerId,
-                    performance,
-                ]),
-            );
-
-            return selectedPlayers.map((player) => {
-                return (
-                    existing.get(player.id) ?? {
-                        playerId: player.id,
-                        runs: 0,
-                        wickets: 0,
-                    }
-                );
-            });
-        });
-    }, [selectedPlayers]);
+    const performances = selectedPlayers.map((player) => ({
+        playerId: player.id,
+        runs: performanceValues[player.id]?.runs ?? 0,
+        wickets: performanceValues[player.id]?.wickets ?? 0,
+    }));
 
     function updatePerformance(
         playerId: string,
         field: "runs" | "wickets",
-        value: string,
+        value: number,
     ) {
-        const numericValue = Number(value);
-
-        setPerformances((current) =>
-            current.map((performance) =>
-                performance.playerId === playerId
-                    ? {
-                        ...performance,
-                        [field]: Number.isNaN(numericValue)
-                            ? 0
-                            : numericValue,
-                    }
-                    : performance,
-            ),
-        );
+        setPerformanceValues((current) => ({
+            ...current,
+            [playerId]: {
+                runs: current[playerId]?.runs ?? 0,
+                wickets: current[playerId]?.wickets ?? 0,
+                [field]: value,
+            },
+        }));
     }
 
     function resetForm() {
         setTeamAId("");
         setTeamBId("");
         setPlayedAt("");
-        setPerformances([]);
     }
 
     async function handleSubmit(
@@ -283,7 +262,7 @@ export default function MatchForm({
                     </div>
                 ) : selectedPlayers.length === 0 ? (
                     <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500">
-                        These teams don't have any players assigned.
+                        No players are available for the selected teams.
                     </div>
                 ) : (
                     <div className="overflow-hidden rounded-xl border border-gray-200">
@@ -328,7 +307,7 @@ export default function MatchForm({
                                                     updatePerformance(
                                                         player.id,
                                                         "runs",
-                                                        event.target.value,
+                                                        Number(event.target.value),
                                                     )
                                                 }
                                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"
@@ -349,7 +328,7 @@ export default function MatchForm({
                                                     updatePerformance(
                                                         player.id,
                                                         "wickets",
-                                                        event.target.value,
+                                                        Number(event.target.value),
                                                     )
                                                 }
                                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-black"

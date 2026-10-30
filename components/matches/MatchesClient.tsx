@@ -16,9 +16,7 @@ export default function MatchesClient({
     initialTeams,
     initialMatches,
 }: MatchesClientProps) {
-    const [matches, setMatches] = useState<Match[]>(
-        initialMatches,
-    );
+    const [matches] = useState(initialMatches);
     const [showForm, setShowForm] = useState(false);
 
     function handleSuccess() {

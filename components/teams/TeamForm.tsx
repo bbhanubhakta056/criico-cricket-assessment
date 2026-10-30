@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -27,13 +27,6 @@ export default function TeamForm({
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const isEditing = Boolean(team);
-
-    useEffect(() => {
-        setName(team?.name ?? "");
-        setSelectedPlayerIds(
-            team?.players.map((player) => player.id) ?? [],
-        );
-    }, [team]);
 
     function togglePlayer(playerId: string) {
         setSelectedPlayerIds((current) =>
