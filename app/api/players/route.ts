@@ -12,7 +12,17 @@ export async function GET() {
     });
 
     return NextResponse.json({
-      data: players,
+      data: players.map((player) => ({
+        id: player.id,
+        name: player.name,
+        role: player.role,
+        basePrice: Number(player.basePrice),
+        matchesPlayed: player.matchesPlayed,
+        totalRuns: player.totalRuns,
+        totalWickets: player.totalWickets,
+        createdAt: player.createdAt.toISOString(),
+        updatedAt: player.updatedAt.toISOString(),
+      })),
     });
   } catch (error) {
     console.error("GET_PLAYERS_ERROR", error);

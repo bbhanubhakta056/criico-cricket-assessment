@@ -24,6 +24,7 @@ export default function DashboardLayout({
                             <NavLink href="/dashboard/leaderboard">
                                 Leaderboard
                             </NavLink>
+                            <NavLink href="/dashboard/teams">Teams</NavLink>
                         </nav>
                     </div>
 
