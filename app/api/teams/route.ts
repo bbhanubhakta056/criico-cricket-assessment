@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { teamSchema } from "@/lib/validations/team.schema";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 export async function GET() {
     try {
@@ -44,6 +45,12 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+    const { response } = await requireAuth();
+
+    if (response) {
+        return response;
+    }
+
     try {
         const body = await request.json();
 

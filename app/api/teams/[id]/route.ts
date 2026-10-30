@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { teamSchema } from "@/lib/validations/team.schema";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 interface RouteContext {
     params: Promise<{
@@ -13,6 +14,12 @@ export async function PUT(
     request: NextRequest,
     context: RouteContext,
 ) {
+    const { response } = await requireAuth();
+
+    if (response) {
+        return response;
+    }
+
     try {
         const { id } = await context.params;
         const body = await request.json();
@@ -149,6 +156,12 @@ export async function DELETE(
     _request: NextRequest,
     context: RouteContext,
 ) {
+    const { response } = await requireAuth();
+
+    if (response) {
+        return response;
+    }
+
     try {
         const { id } = await context.params;
 
