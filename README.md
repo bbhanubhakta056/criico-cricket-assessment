@@ -4,6 +4,12 @@ A full-stack cricket management application built as part of the **Criico Full S
 
 The application allows administrators to manage players and teams, record match performances, automatically update player statistics, and rank players using an Impact Score.
 
+## 🔗 Live Demo
+
+**Live Application:** https://criico-cricket-assessment.vercel.app
+
+**GitHub Repository:** https://github.com/bbhanubhakta056/criico-cricket-assessment
+
 ---
 
 ## Features
@@ -730,7 +736,7 @@ npm test
 npm run build
 ```
 
-The final assessment build currently passes all three checks without lint errors or warnings.
+The project passes ESLint, Vitest, and the production Next.js build successfully.
 
 ---
 
